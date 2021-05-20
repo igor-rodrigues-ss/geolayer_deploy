@@ -1,0 +1,49 @@
+version: '2.0'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.8
+    ports:
+      - 5672:5672
+
+  db:
+    image: kartoza/postgis
+    ports:
+      - 5433:5432
+    volumes:
+      - /opt/geolayers/dbdata:/var/lib/postgresql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASS=123456
+
+  memcached:
+    image: memcached:1.6
+    ports:
+      - 11211:11211
+    command: memcached --threads 4 -m 1024
+
+  api:
+    image: geolayer_be:001
+    depends_on:
+      - db
+      - memcached
+    build:
+      dockerfile: Dockerfile-api
+      context: .
+    ports:
+      - 8000:8000
+    command: /bin/bash -c "sleep 8 && uvicorn --host 0.0.0.0 --port 8000 src.app:app"
+
+  worker:
+    image: geolayer_be:001
+    depends_on:
+      - rabbitmq
+    command: celery -A src.celery.app worker --loglevel=info
+
+  flower:
+    depends_on:
+      - worker
+    image: geolayer_be:001
+    ports:
+      - 5555:5555
+    command: celery -A src.celery.app flower --loglevel=info

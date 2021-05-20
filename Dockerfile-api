@@ -1,0 +1,38 @@
+FROM ubuntu:20.04
+
+
+RUN apt update -y
+
+###### Configurando UTF-8 ##########
+RUN apt-get install -y locales
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=en_US.UTF-8
+ENV LANG en_US.UTF-8
+
+###### Configurando Data e Hora ##########
+ENV TZ=America/Sao_Paulo
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt update && apt upgrade tzdata -y
+
+###### Instalando o Python
+RUN apt install python3.9 python3.9-dev python3.9-distutils python3-pip -y
+
+##### Instalando GDAL
+RUN apt install gdal-bin libgdal-dev -y
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
+ENV C_INCLUDE_PATH=/usr/include/gdal
+
+###### Instalando Poetry
+RUN apt install curl -y && \
+    curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3.9
+
+###### Configurando a aplicacao
+COPY ./kgeo_be /app
+WORKDIR /app
+
+RUN /bin/bash -c "source /root/.poetry/env && \
+    poetry config virtualenvs.create false --local && \
+    poetry install --no-dev"
+
+CMD sleep 10 && uvicorn src.app:app
