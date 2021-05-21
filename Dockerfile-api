@@ -23,16 +23,12 @@ RUN apt install gdal-bin libgdal-dev -y
 ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
 ENV C_INCLUDE_PATH=/usr/include/gdal
 
-###### Instalando Poetry
-RUN apt install curl -y && \
-    curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3.9
+###### Instalando Pipenv
+RUN pip3 install pipenv==2020.11.15
 
 ###### Configurando a aplicacao
-COPY ./kgeo_be /app
+COPY ./geolayers_be /app
 WORKDIR /app
-
-RUN /bin/bash -c "source /root/.poetry/env && \
-    poetry config virtualenvs.create false --local && \
-    poetry install --no-dev"
+RUN pipenv install --system
 
 CMD sleep 10 && uvicorn src.app:app
