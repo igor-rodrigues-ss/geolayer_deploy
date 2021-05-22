@@ -7,7 +7,7 @@ COPY $APP_NAME/package.json /app/package.json
 RUN npm install
 COPY ./$APP_NAME /app/
 
-RUN sed -i 's/REACT_APP_API_URL.*/REACT_APP_API_URL=http\:\/\/api\:8000/' /app/.env
+RUN sed -i 's/REACT_APP_API_URL.*/REACT_APP_API_URL=http\:\/\/localhost\:8000/' /app/.env
 RUN npm run build
 
 FROM nginx:1.16.0-alpine
