@@ -32,8 +32,7 @@ services:
       - db
       - memcached
     build:
-      dockerfile: Dockerfile-api
-      context: .
+      context: be
     environment:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
@@ -52,7 +51,6 @@ services:
       - ${STORAGE_PATH}:${STORAGE_PATH}
     ports:
       - 8000:8000
-    command: /bin/bash -c "sleep 8 && uvicorn --host 0.0.0.0 --port 8000 src.app:app"
 
   worker:
     image: geolayer_be:001
@@ -98,3 +96,11 @@ services:
     ports:
       - 5555:5555
     command: celery -A src.celery.app flower --loglevel=info
+
+  front:
+    depends_on:
+      - worker
+    ports:
+      - 3000:3000
+    build:
+      context: fe

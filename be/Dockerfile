@@ -1,6 +1,5 @@
 FROM ubuntu:20.04
 
-
 RUN apt update -y
 
 ###### Configurando UTF-8 ##########
@@ -27,8 +26,9 @@ ENV C_INCLUDE_PATH=/usr/include/gdal
 RUN pip3 install pipenv==2020.11.15
 
 ###### Configurando a aplicacao
-COPY ./geolayers_be /app
+ARG APP_NAME=geolayers_be
+COPY ./$APP_NAME /app
 WORKDIR /app
 RUN pipenv install --system
 
-CMD sleep 10 && uvicorn src.app:app
+CMD uvicorn --host 0.0.0.0 --port 8000 src.app:app
