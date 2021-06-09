@@ -15,10 +15,10 @@ services:
     ports:
       - 5433:5432
     volumes:
-      - /opt/geolayers/dbdata:/var/lib/postgresql
+      - ./db/data:/var/lib/postgresql
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASS=123456
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASS=${POSTGRES_PASS}
 
   memcached:
     image: memcached:1.6
