@@ -11,14 +11,17 @@ services:
       - RABBITMQ_DEFAULT_VHOST=${RABBIT_VHOST}
 
   db:
-    image: kartoza/postgis
+    build:
+      context: ./
+      dockerfile: db/Dockerfile
     ports:
       - 5433:5432
     volumes:
-      - ./db/data:/var/lib/postgresql
+      - ${HOME}/geolayers_db/data:/var/lib/postgresql
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASS=${POSTGRES_PASS}
+      - POSTGRES_DB=${DB_NAME}
 
   memcached:
     image: memcached:1.6
