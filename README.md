@@ -70,5 +70,5 @@
 ### Stop all services
 
 ```shell
-./deploy.sh stop 
+./deploy.sh stop
 ```
