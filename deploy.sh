@@ -21,7 +21,6 @@ fi
 if [ -z "$args" ]
   then
   docker-compose up -d --build
-  echo "Aguarde alguns segundos até que a base de dados seja iniciada."
 else
   docker-compose "$@"
 fi
